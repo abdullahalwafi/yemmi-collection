@@ -23,7 +23,7 @@ return new class extends Migration
             $table->decimal('price', 15, 2)->default(0);
 
             $table->unsignedBigInteger('supplier_id')->nullable();
-            $table->foreign('supplier_id')->references('id')->on('supplier')->onDelete('set null');
+            $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('set null');
 
             $table->timestamps();
         });
