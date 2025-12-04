@@ -48,7 +48,7 @@ class DailyStockActivityChart extends ChartWidget
                 [
                     'label' => 'Pengeluaran',
                     'data' => $stockIn,
-                    'borderColor' => '#10BStok Keluar981', // emerald-500
+                    'borderColor' => '#10B981', // emerald-500
                     'backgroundColor' => 'rgba(16, 185, 129, 0.3)',
                 ],
                 [
