@@ -21,6 +21,7 @@ return new class extends Migration
             $table->text('deskripsi')->nullable();
             $table->integer('qty')->default(0);
             $table->decimal('price', 15, 2)->default(0);
+            $table->decimal('capital_price', 15, 2)->default(0);
 
             $table->unsignedBigInteger('supplier_id')->nullable();
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('set null');

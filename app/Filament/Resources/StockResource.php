@@ -3,12 +3,12 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\StockResource\Pages;
-use App\Filament\Resources\StockResource\RelationManagers;
 use App\Models\Product;
 use App\Models\Stock;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -16,8 +16,8 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Tabs\Tab;
+
 
 class StockResource extends Resource
 {
@@ -30,53 +30,105 @@ class StockResource extends Resource
         return $form->schema([
             Radio::make('tipe')
                 ->options([
-                    'in' => 'IN (Masuk)',
-                    'out' => 'OUT (Keluar)',
+                    'in' => 'Penambahan',
+                    'out' => 'Penjualan',
                 ])
-                ->required(),
+                ->required()
+                ->reactive(),
+
             DatePicker::make('date')->label('Tanggal')->required(),
-            Select::make('product_id')
-                ->label('Produk')
-                ->options(Product::query()->orderBy('name')->pluck('name', 'id')->toArray())
-                ->searchable()
-                ->required(),
-            TextInput::make('qty')->numeric()->required()->minValue(1),
-            TextInput::make('price')->label('Harga per unit')->numeric()->default(0),
-            Textarea::make('ket')->label('Keterangan')->nullable(),
+
+            Repeater::make('items')
+                ->label('Items')
+                ->schema([
+                    Select::make('product_id')
+                        ->label('Produk')
+                        ->options(fn() => Product::orderBy('name')->pluck('name', 'id')->toArray())
+                        ->searchable()
+                        ->reactive()
+                        ->afterStateUpdated(function ($state, callable $set) {
+                            $product = \App\Models\Product::find($state);
+                            $set('price', $product ? (string) $product->price : '0');
+                            $set('capital_price', $product ? (string) $product->capital_price : '0');
+                        })
+                        ->required(),
+
+                    TextInput::make('qty')
+                        ->label('Qty')
+                        ->numeric()
+                        ->required()
+                        ->minValue(1)
+                        ->reactive(),
+
+                    TextInput::make('capital_price')
+                        ->label('Harga modal')
+                        ->numeric()
+                        ->readOnly()
+                        ->dehydrated(true),
+                    TextInput::make('price')
+                        ->label('Harga per unit')
+                        ->numeric()
+                        ->readOnly()
+                        ->dehydrated(true),
+                ])
+                ->columns(2)
+                ->createItemButtonLabel('Tambah Produk')
+                ->minItems(1)
+                ->dehydrated(true),
+
+            Textarea::make('ket')->label('Keterangan (opsional)')->nullable()->cols(2),
         ]);
     }
 
     public static function table(Table $table): Table
     {
-        return $table->columns([
-            Tables\Columns\TextColumn::make('id')->label('ID')->sortable(),
-            Tables\Columns\BadgeColumn::make('tipe')
-                ->label('Tipe')
-                ->colors([
-                    'success' => 'in',
-                    'danger'  => 'out',
-                ])
-                ->formatStateUsing(fn($state) => $state === 'in' ? 'Masuk' : 'Keluar')
-                ->sortable(),
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('id')->label('ID')->sortable(),
+                Tables\Columns\BadgeColumn::make('tipe')
+                    ->label('Tipe')
+                    ->colors([
+                        'success' => 'in',
+                        'danger'  => 'out',
+                    ])
+                    ->formatStateUsing(fn($state) => $state === 'in' ? 'Penambahan' : 'Penjualan')
+                    ->sortable(),
 
-            Tables\Columns\TextColumn::make('date')->date()->sortable(),
-            Tables\Columns\TextColumn::make('product.name')->label('Produk')->searchable(),
-            Tables\Columns\TextColumn::make('qty')->label('Qty')->sortable(),
-            Tables\Columns\TextColumn::make('price')->label('Harga')->money('idr'),
-            Tables\Columns\TextColumn::make('ket')->label('Keterangan')->limit(40),
-        ])->filters([
-            Tables\Filters\SelectFilter::make('product')->relationship('product', 'name'),
-            Tables\Filters\Filter::make('tipe')->form([
-                Forms\Components\Select::make('tipe')->options([
-                    'in' => 'in',
-                    'out' => 'out',
-                ]),
-            ]),
-        ])->actions([
-            Tables\Actions\EditAction::make(),
-        ])->bulkActions([
-            Tables\Actions\DeleteBulkAction::make(),
-        ]);
+                Tables\Columns\TextColumn::make('date')->date()->sortable(),
+                Tables\Columns\TextColumn::make('invoice')->label('Invoice')->sortable(),
+                Tables\Columns\TextColumn::make('product.name')->label('Produk')->searchable(),
+                Tables\Columns\TextColumn::make('qty')->label('Qty')->sortable(),
+                Tables\Columns\TextColumn::make('price')->label('Harga (jual)')->money('idr'),
+                Tables\Columns\TextColumn::make('product.capital_price')->label('Capital (produk)')->money('idr'),
+                Tables\Columns\TextColumn::make('ket')->label('Keterangan')->limit(40),
+            ])
+
+
+            // FILTER BIASA (opsional, bisa tetap dipakai)
+            ->filters([
+                Tables\Filters\SelectFilter::make('product_id')
+                    ->label('Produk')
+                    ->options(fn() => Product::orderBy('name')->pluck('name', 'id')->toArray()),
+
+                Tables\Filters\SelectFilter::make('tipe')
+                    ->label('Jenis Transaksi')
+                    ->options([
+                        ''    => 'Semua',
+                        'in'  => 'Penambahan',
+                        'out' => 'Penjualan',
+                    ])
+                    ->default('')
+                    ->native(false), // agar tampil sebagai segmented / dropdown yang rapi
+            ])
+
+            ->actions([
+                Tables\Actions\EditAction::make(),
+            ])
+
+            ->bulkActions([
+                Tables\Actions\DeleteBulkAction::make(),
+            ])
+            ->defaultSort('date', 'desc');
     }
 
 
@@ -90,9 +142,9 @@ class StockResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListStocks::route('/'),
+            'index'  => Pages\ListStocks::route('/'),
             'create' => Pages\CreateStock::route('/create'),
-            'edit' => Pages\EditStock::route('/{record}/edit'),
+            'edit'   => Pages\EditStock::route('/{record}/edit'),
         ];
     }
 }

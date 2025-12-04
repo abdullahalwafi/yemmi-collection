@@ -43,6 +43,7 @@ class ProductResource extends Resource
             Textarea::make('deskripsi')->label('Deskripsi')->nullable(),
             TextInput::make('qty')->label('Qty')->numeric()->default(0),
             TextInput::make('price')->label('Price')->numeric()->default(0),
+            TextInput::make('capital_price')->label('Capital Price')->numeric()->default(0),
             Placeholder::make('info')->content('Perubahan qty tidak merubah riwayat stok. Gunakan menu Stok untuk mutasi.'),
         ]);
     }
@@ -56,6 +57,7 @@ class ProductResource extends Resource
             Tables\Columns\TextColumn::make('supplier.name')->label('Supplier')->toggleable(),
             Tables\Columns\TextColumn::make('qty')->label('Qty')->sortable(),
             Tables\Columns\TextColumn::make('price')->money('idr'),
+            Tables\Columns\TextColumn::make('capital_price')->money('idr'),
             Tables\Columns\TextColumn::make('created_at')->label('Created')->dateTime(),
         ])->filters([
             //

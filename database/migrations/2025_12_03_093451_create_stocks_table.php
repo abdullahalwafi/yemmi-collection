@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
             $table->enum('tipe', ['in', 'out']);
+            $table->string("invoice");
             $table->date('date');
 
             $table->unsignedBigInteger('product_id');
