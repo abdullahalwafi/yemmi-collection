@@ -98,7 +98,7 @@ class CreateStock extends CreateRecord
                 if ($tipe === 'in') {
                     // penambahan: update modal produk dan tambah qty
                     $product->increment('qty', $qty);
-                    $product->capital_price = $price;
+                    $stockData['price'] = $product->capital_price;
                     $product->save();
                 } else {
                     // penjualan: pastikan stok cukup lalu kurangi

@@ -21,10 +21,11 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        User::create([
+            'name' => 'admin',
+            'email' => 'admin@admin.com',
+            'password' => bcrypt('admin@admin.com'),
+        ]);
         $now = now();
 
         Supplier::insert([
@@ -70,11 +71,11 @@ class DatabaseSeeder extends Seeder
 
         Stock::insert([
             // 1-5: IN (price = 0)
-            ['tipe' => 'in',  'invoice' => 'INV-' . now()->format('Ymd') . '-0001', 'date' => $date->copy()->subDays(10), 'product_id' => 1, 'qty' => 20,  'price' => 0,     'ket' => 'Pembelian awal', 'created_at' => $now, 'updated_at' => $now],
-            ['tipe' => 'in',  'invoice' => 'INV-' . now()->format('Ymd') . '-0002', 'date' => $date->copy()->subDays(9),  'product_id' => 2, 'qty' => 30,  'price' => 0,     'ket' => 'Pembelian awal', 'created_at' => $now, 'updated_at' => $now],
-            ['tipe' => 'in',  'invoice' => 'INV-' . now()->format('Ymd') . '-0003', 'date' => $date->copy()->subDays(8),  'product_id' => 3, 'qty' => 10,  'price' => 0,     'ket' => 'Pembelian awal', 'created_at' => $now, 'updated_at' => $now],
-            ['tipe' => 'in',  'invoice' => 'INV-' . now()->format('Ymd') . '-0004', 'date' => $date->copy()->subDays(7),  'product_id' => 4, 'qty' => 15,  'price' => 0,     'ket' => 'Pembelian awal', 'created_at' => $now, 'updated_at' => $now],
-            ['tipe' => 'in',  'invoice' => 'INV-' . now()->format('Ymd') . '-0005', 'date' => $date->copy()->subDays(6),  'product_id' => 5, 'qty' => 50,  'price' => 0,     'ket' => 'Pembelian awal', 'created_at' => $now, 'updated_at' => $now],
+            ['tipe' => 'in',  'invoice' => 'INV-' . now()->format('Ymd') . '-0001', 'date' => $date->copy()->subDays(10), 'product_id' => 1, 'qty' => 20,  'price' => 42000,     'ket' => 'Pembelian awal', 'created_at' => $now, 'updated_at' => $now],
+            ['tipe' => 'in',  'invoice' => 'INV-' . now()->format('Ymd') . '-0002', 'date' => $date->copy()->subDays(9),  'product_id' => 2, 'qty' => 30,  'price' => 42000,     'ket' => 'Pembelian awal', 'created_at' => $now, 'updated_at' => $now],
+            ['tipe' => 'in',  'invoice' => 'INV-' . now()->format('Ymd') . '-0003', 'date' => $date->copy()->subDays(8),  'product_id' => 3, 'qty' => 10,  'price' => 42000,     'ket' => 'Pembelian awal', 'created_at' => $now, 'updated_at' => $now],
+            ['tipe' => 'in',  'invoice' => 'INV-' . now()->format('Ymd') . '-0004', 'date' => $date->copy()->subDays(7),  'product_id' => 4, 'qty' => 15,  'price' => 42000,     'ket' => 'Pembelian awal', 'created_at' => $now, 'updated_at' => $now],
+            ['tipe' => 'in',  'invoice' => 'INV-' . now()->format('Ymd') . '-0005', 'date' => $date->copy()->subDays(6),  'product_id' => 5, 'qty' => 50,  'price' => 42000,     'ket' => 'Pembelian awal', 'created_at' => $now, 'updated_at' => $now],
 
             // 6-8: OUT (price diisi)
             ['tipe' => 'out', 'invoice' => 'INV-' . now()->format('Ymd') . '-0006', 'date' => $date->copy()->subDays(5),  'product_id' => 1, 'qty' => 10,  'price' => 52000, 'ket' => 'Penjualan', 'created_at' => $now, 'updated_at' => $now],
@@ -82,8 +83,8 @@ class DatabaseSeeder extends Seeder
             ['tipe' => 'out', 'invoice' => 'INV-' . now()->format('Ymd') . '-0008', 'date' => $date->copy()->subDays(3),  'product_id' => 5, 'qty' => 20,  'price' => 70000, 'ket' => 'Penjualan', 'created_at' => $now, 'updated_at' => $now],
 
             // 9-10: IN (restock)
-            ['tipe' => 'in',  'invoice' => 'INV-' . now()->format('Ymd') . '-0009', 'date' => $date->copy()->subDays(2),  'product_id' => 6, 'qty' => 40,  'price' => 0,     'ket' => 'Restock', 'created_at' => $now, 'updated_at' => $now],
-            ['tipe' => 'in',  'invoice' => 'INV-' . now()->format('Ymd') . '-0010', 'date' => $date->copy()->subDay(),      'product_id' => 7, 'qty' => 100, 'price' => 0,     'ket' => 'Restock', 'created_at' => $now, 'updated_at' => $now],
+            ['tipe' => 'in',  'invoice' => 'INV-' . now()->format('Ymd') . '-0009', 'date' => $date->copy()->subDays(2),  'product_id' => 6, 'qty' => 40,  'price' => 42000,     'ket' => 'Restock', 'created_at' => $now, 'updated_at' => $now],
+            ['tipe' => 'in',  'invoice' => 'INV-' . now()->format('Ymd') . '-0010', 'date' => $date->copy()->subDay(),      'product_id' => 7, 'qty' => 100, 'price' => 42000,     'ket' => 'Restock', 'created_at' => $now, 'updated_at' => $now],
         ]);
     }
 }
