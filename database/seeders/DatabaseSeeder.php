@@ -20,16 +20,8 @@ class DatabaseSeeder extends Seeder
          * USERS (10)
          * ===================== */
         User::insert([
-            ['name' => 'Admin Utama', 'email' => 'admin@tokobajuanak.id', 'password' => Hash::make('password')],
-            ['name' => 'Kasir 1', 'email' => 'kasir1@tokobajuanak.id', 'password' => Hash::make('password')],
-            ['name' => 'Kasir 2', 'email' => 'kasir2@tokobajuanak.id', 'password' => Hash::make('password')],
-            ['name' => 'Gudang 1', 'email' => 'gudang1@tokobajuanak.id', 'password' => Hash::make('password')],
-            ['name' => 'Gudang 2', 'email' => 'gudang2@tokobajuanak.id', 'password' => Hash::make('password')],
-            ['name' => 'Supervisor', 'email' => 'spv@tokobajuanak.id', 'password' => Hash::make('password')],
-            ['name' => 'Owner', 'email' => 'owner@tokobajuanak.id', 'password' => Hash::make('password')],
-            ['name' => 'Admin Cabang Bogor', 'email' => 'bogor@tokobajuanak.id', 'password' => Hash::make('password')],
-            ['name' => 'Admin Cabang Depok', 'email' => 'depok@tokobajuanak.id', 'password' => Hash::make('password')],
-            ['name' => 'Admin Cabang Bekasi', 'email' => 'bekasi@tokobajuanak.id', 'password' => Hash::make('password')],
+            ['name' => 'Admin', 'email' => 'admin@admin.com', 'password' => Hash::make('admin@admin.com')],
+            ['name' => 'Owner', 'email' => 'owner@owner.com', 'password' => Hash::make('owner@owner.com')],
         ]);
 
         /* =====================
