@@ -2,89 +2,98 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use App\Models\Category;
+use App\Models\Supplier;
 use App\Models\Product;
 use App\Models\Stock;
-use App\Models\Supplier;
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::create([
-            'name' => 'admin',
-            'email' => 'admin@admin.com',
-            'password' => bcrypt('admin@admin.com'),
-        ]);
         $now = now();
 
+        /* =====================
+         * USERS (10)
+         * ===================== */
+        User::insert([
+            ['name' => 'Admin Utama', 'email' => 'admin@tokobajuanak.id', 'password' => Hash::make('password')],
+            ['name' => 'Kasir 1', 'email' => 'kasir1@tokobajuanak.id', 'password' => Hash::make('password')],
+            ['name' => 'Kasir 2', 'email' => 'kasir2@tokobajuanak.id', 'password' => Hash::make('password')],
+            ['name' => 'Gudang 1', 'email' => 'gudang1@tokobajuanak.id', 'password' => Hash::make('password')],
+            ['name' => 'Gudang 2', 'email' => 'gudang2@tokobajuanak.id', 'password' => Hash::make('password')],
+            ['name' => 'Supervisor', 'email' => 'spv@tokobajuanak.id', 'password' => Hash::make('password')],
+            ['name' => 'Owner', 'email' => 'owner@tokobajuanak.id', 'password' => Hash::make('password')],
+            ['name' => 'Admin Cabang Bogor', 'email' => 'bogor@tokobajuanak.id', 'password' => Hash::make('password')],
+            ['name' => 'Admin Cabang Depok', 'email' => 'depok@tokobajuanak.id', 'password' => Hash::make('password')],
+            ['name' => 'Admin Cabang Bekasi', 'email' => 'bekasi@tokobajuanak.id', 'password' => Hash::make('password')],
+        ]);
+
+        /* =====================
+         * SUPPLIERS (10)
+         * ===================== */
         Supplier::insert([
-            ['name' => 'PT Sumber Makmur', 'address' => 'Jl. Mawar No.12', 'telepon' => '081234567890', 'email' => 'supplier1@example.com', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'CV Berkah Jaya', 'address' => 'Jl. Melati No.7', 'telepon' => '081298765432', 'email' => 'supplier2@example.com', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'UD Sentosa', 'address' => 'Jl. Kamboja No.5', 'telepon' => '081377712233', 'email' => 'supplier3@example.com', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'PT Maju Jaya', 'address' => 'Jl. Kenanga No.3', 'telepon' => '081244455666', 'email' => 'supplier4@example.com', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'CV Prima', 'address' => 'Jl. Dahlia No.8', 'telepon' => '081299988877', 'email' => 'supplier5@example.com', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'PT Anugerah', 'address' => 'Jl. Flamboyan No.2', 'telepon' => '081233344455', 'email' => 'supplier6@example.com', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Toko Makmur', 'address' => 'Jl. Anggrek No.10', 'telepon' => '081255577799', 'email' => 'supplier7@example.com', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'CV Nusantara', 'address' => 'Jl. Teratai No.4', 'telepon' => '081266688899', 'email' => 'supplier8@example.com', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'PT Gemilang', 'address' => 'Jl. Bougainvillea No.6', 'telepon' => '081277700011', 'email' => 'supplier9@example.com', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'UD Sejahtera', 'address' => 'Jl. Cemara No.1', 'telepon' => '081288899900', 'email' => 'supplier10@example.com', 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'PT Mothercare Indonesia', 'address' => 'Jakarta Selatan', 'telepon' => '02178889900', 'email' => 'info@mothercare.co.id'],
+            ['name' => 'PT Kiko Kids Indonesia', 'address' => 'Jakarta Barat', 'telepon' => '0215552233', 'email' => 'sales@kikokids.id'],
+            ['name' => 'CV Velvet Junior', 'address' => 'Bandung', 'telepon' => '0227334455', 'email' => 'velvetjunior@gmail.com'],
+            ['name' => 'PT Libby Baby Wear', 'address' => 'Tangerang', 'telepon' => '0215901122', 'email' => 'cs@libby.co.id'],
+            ['name' => 'PT Poney Indonesia', 'address' => 'Jakarta Pusat', 'telepon' => '0213928822', 'email' => 'info@poney.com'],
+            ['name' => 'CV Little Palmerhaus', 'address' => 'Surabaya', 'telepon' => '0315678899', 'email' => 'palmerhaus@gmail.com'],
+            ['name' => 'PT OshKosh Indonesia', 'address' => 'Jakarta Selatan', 'telepon' => '0217223344', 'email' => 'info@oshkosh.co.id'],
+            ['name' => 'CV Hey Baby Wear', 'address' => 'Bandung', 'telepon' => '0227001122', 'email' => 'heybaby@gmail.com'],
+            ['name' => 'PT Cotton On Kids Indonesia', 'address' => 'Jakarta Selatan', 'telepon' => '02129033000', 'email' => 'kids@cottonon.com'],
+            ['name' => 'UD Grosir Tanah Abang Kids', 'address' => 'Jakarta Pusat', 'telepon' => '081234556677', 'email' => 'tanahabangkids@gmail.com'],
         ]);
 
+        /* =====================
+         * CATEGORIES (10)
+         * ===================== */
         Category::insert([
-            ['name' => 'Kosmetik', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Pakaian', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Aksesoris', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Elektronik', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Makanan', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Minuman', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Perawatan', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Kecantikan', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Pelengkap', 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Peralatan Rumah', 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'Baju Bayi'],
+            ['name' => 'Baju Anak Laki-laki'],
+            ['name' => 'Baju Anak Perempuan'],
+            ['name' => 'Celana Anak'],
+            ['name' => 'Jaket Anak'],
+            ['name' => 'Dress Anak'],
+            ['name' => 'Setelan Anak'],
+            ['name' => 'Piyama Anak'],
+            ['name' => 'Aksesoris Anak'],
+            ['name' => 'Sepatu Anak'],
         ]);
 
+        /* =====================
+         * PRODUCTS (10)
+         * ===================== */
         Product::insert([
-            ['name' => 'Lipstick Matte', 'category_id' => 1, 'deskripsi' => 'Lipstick warna merah matte.', 'qty' => 100, 'price' => 45000, 'capital_price' => 42000, 'supplier_id' => 1, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Kemeja Casual', 'category_id' => 2, 'deskripsi' => 'Kemeja bahan katun premium.', 'qty' => 80, 'price' => 120000, 'capital_price' => 80000, 'supplier_id' => 2, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Kalung Silver', 'category_id' => 3, 'deskripsi' => 'Kalung perak bergaya minimalis.', 'qty' => 60, 'price' => 75000, 'capital_price' => 70000, 'supplier_id' => 3, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Headphone Wireless', 'category_id' => 4, 'deskripsi' => 'Headphone bluetooth, noise cancelling.', 'qty' => 40, 'price' => 350000, 'capital_price' => 300000, 'supplier_id' => 4, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Kopi Robusta 500g', 'category_id' => 5, 'deskripsi' => 'Biji kopi robusta lokal.', 'qty' => 200, 'price' => 60000, 'capital_price' => 55000, 'supplier_id' => 5, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Teh Melati 200g', 'category_id' => 6, 'deskripsi' => 'Teh melati berkualitas.', 'qty' => 150, 'price' => 25000, 'capital_price' => 23000, 'supplier_id' => 6, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Sabun Mandi', 'category_id' => 7, 'deskripsi' => 'Sabun cair wangi segar.', 'qty' => 300, 'price' => 15000, 'capital_price' => 12000, 'supplier_id' => 7, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Pelembap Wajah', 'category_id' => 8, 'deskripsi' => 'Cream pelembap untuk kulit normal.', 'qty' => 120, 'price' => 90000, 'capital_price' => 70000, 'supplier_id' => 8, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Gantungan Kunci', 'category_id' => 9, 'deskripsi' => 'Gantungan kunci lucu dan awet.', 'qty' => 500, 'price' => 5000, 'capital_price' => 3000, 'supplier_id' => 9, 'created_at' => $now, 'updated_at' => $now],
-            ['name' => 'Sapu Lantai', 'category_id' => 10, 'deskripsi' => 'Sapu berkualitas untuk rumah tangga.', 'qty' => 75, 'price' => 30000, 'capital_price' => 22000, 'supplier_id' => 10, 'created_at' => $now, 'updated_at' => $now],
+            ['name' => 'Libby Bodysuit Bayi Lengan Pendek', 'category_id' => 1, 'deskripsi' => 'Bodysuit bayi katun lembut', 'qty' => 50, 'price' => 49000, 'capital_price' => 35000, 'supplier_id' => 4],
+            ['name' => 'Kiko Kids Kaos Anak Laki-laki', 'category_id' => 2, 'deskripsi' => 'Kaos anak motif dinosaurus', 'qty' => 40, 'price' => 69000, 'capital_price' => 45000, 'supplier_id' => 2],
+            ['name' => 'Velvet Junior Dress Anak', 'category_id' => 6, 'deskripsi' => 'Dress anak perempuan casual', 'qty' => 30, 'price' => 129000, 'capital_price' => 90000, 'supplier_id' => 3],
+            ['name' => 'Mothercare Jaket Anak', 'category_id' => 5, 'deskripsi' => 'Jaket anak hangat dan ringan', 'qty' => 25, 'price' => 199000, 'capital_price' => 150000, 'supplier_id' => 1],
+            ['name' => 'Poney Setelan Anak', 'category_id' => 7, 'deskripsi' => 'Setelan anak premium', 'qty' => 20, 'price' => 179000, 'capital_price' => 130000, 'supplier_id' => 5],
+            ['name' => 'OshKosh Celana Jeans Anak', 'category_id' => 4, 'deskripsi' => 'Celana jeans anak kuat', 'qty' => 35, 'price' => 159000, 'capital_price' => 120000, 'supplier_id' => 7],
+            ['name' => 'Hey Baby Piyama Anak', 'category_id' => 8, 'deskripsi' => 'Piyama anak motif lucu', 'qty' => 45, 'price' => 89000, 'capital_price' => 60000, 'supplier_id' => 8],
+            ['name' => 'Little Palmerhaus Dress Anak', 'category_id' => 6, 'deskripsi' => 'Dress anak handmade', 'qty' => 15, 'price' => 219000, 'capital_price' => 160000, 'supplier_id' => 6],
+            ['name' => 'Cotton On Kids Topi Anak', 'category_id' => 9, 'deskripsi' => 'Topi anak katun', 'qty' => 60, 'price' => 59000, 'capital_price' => 40000, 'supplier_id' => 9],
+            ['name' => 'Sepatu Anak Sekolah Hitam', 'category_id' => 10, 'deskripsi' => 'Sepatu sekolah anak', 'qty' => 50, 'price' => 149000, 'capital_price' => 110000, 'supplier_id' => 10],
         ]);
 
-        $date = now();
-
+        /* =====================
+         * STOCKS (10)
+         * ===================== */
         Stock::insert([
-            // 1-5: IN (price = 0)
-            ['tipe' => 'in',  'invoice' => 'INV-' . now()->format('Ymd') . '-0001', 'date' => $date->copy()->subDays(10), 'product_id' => 1, 'qty' => 20,  'price' => 42000,     'ket' => 'Pembelian awal', 'created_at' => $now, 'updated_at' => $now],
-            ['tipe' => 'in',  'invoice' => 'INV-' . now()->format('Ymd') . '-0002', 'date' => $date->copy()->subDays(9),  'product_id' => 2, 'qty' => 30,  'price' => 42000,     'ket' => 'Pembelian awal', 'created_at' => $now, 'updated_at' => $now],
-            ['tipe' => 'in',  'invoice' => 'INV-' . now()->format('Ymd') . '-0003', 'date' => $date->copy()->subDays(8),  'product_id' => 3, 'qty' => 10,  'price' => 42000,     'ket' => 'Pembelian awal', 'created_at' => $now, 'updated_at' => $now],
-            ['tipe' => 'in',  'invoice' => 'INV-' . now()->format('Ymd') . '-0004', 'date' => $date->copy()->subDays(7),  'product_id' => 4, 'qty' => 15,  'price' => 42000,     'ket' => 'Pembelian awal', 'created_at' => $now, 'updated_at' => $now],
-            ['tipe' => 'in',  'invoice' => 'INV-' . now()->format('Ymd') . '-0005', 'date' => $date->copy()->subDays(6),  'product_id' => 5, 'qty' => 50,  'price' => 42000,     'ket' => 'Pembelian awal', 'created_at' => $now, 'updated_at' => $now],
-
-            // 6-8: OUT (price diisi)
-            ['tipe' => 'out', 'invoice' => 'INV-' . now()->format('Ymd') . '-0006', 'date' => $date->copy()->subDays(5),  'product_id' => 1, 'qty' => 10,  'price' => 52000, 'ket' => 'Penjualan', 'created_at' => $now, 'updated_at' => $now],
-            ['tipe' => 'out', 'invoice' => 'INV-' . now()->format('Ymd') . '-0007', 'date' => $date->copy()->subDays(4),  'product_id' => 2, 'qty' => 5,   'price' => 130000, 'ket' => 'Penjualan', 'created_at' => $now, 'updated_at' => $now],
-            ['tipe' => 'out', 'invoice' => 'INV-' . now()->format('Ymd') . '-0008', 'date' => $date->copy()->subDays(3),  'product_id' => 5, 'qty' => 20,  'price' => 70000, 'ket' => 'Penjualan', 'created_at' => $now, 'updated_at' => $now],
-
-            // 9-10: IN (restock)
-            ['tipe' => 'in',  'invoice' => 'INV-' . now()->format('Ymd') . '-0009', 'date' => $date->copy()->subDays(2),  'product_id' => 6, 'qty' => 40,  'price' => 42000,     'ket' => 'Restock', 'created_at' => $now, 'updated_at' => $now],
-            ['tipe' => 'in',  'invoice' => 'INV-' . now()->format('Ymd') . '-0010', 'date' => $date->copy()->subDay(),      'product_id' => 7, 'qty' => 100, 'price' => 42000,     'ket' => 'Restock', 'created_at' => $now, 'updated_at' => $now],
+            ['tipe' => 'in', 'invoice' => 'INV-202501-001', 'date' => now()->subDays(14), 'product_id' => 1, 'qty' => 20, 'price' => 35000, 'ket' => 'Stok awal'],
+            ['tipe' => 'in', 'invoice' => 'INV-202501-002', 'date' => now()->subDays(13), 'product_id' => 2, 'qty' => 15, 'price' => 45000, 'ket' => 'Stok awal'],
+            ['tipe' => 'out', 'invoice' => 'INV-202501-003', 'date' => now()->subDays(10), 'product_id' => 1, 'qty' => 5,  'price' => 49000, 'ket' => 'Penjualan'],
+            ['tipe' => 'out', 'invoice' => 'INV-202501-004', 'date' => now()->subDays(9),  'product_id' => 3, 'qty' => 3,  'price' => 129000, 'ket' => 'Penjualan'],
+            ['tipe' => 'in', 'invoice' => 'INV-202501-005', 'date' => now()->subDays(7),  'product_id' => 4, 'qty' => 10, 'price' => 150000, 'ket' => 'Restock'],
+            ['tipe' => 'out', 'invoice' => 'INV-202501-006', 'date' => now()->subDays(6),  'product_id' => 2, 'qty' => 4,  'price' => 69000, 'ket' => 'Penjualan'],
+            ['tipe' => 'in', 'invoice' => 'INV-202501-007', 'date' => now()->subDays(4),  'product_id' => 5, 'qty' => 8,  'price' => 130000, 'ket' => 'Restock'],
+            ['tipe' => 'out', 'invoice' => 'INV-202501-008', 'date' => now()->subDays(3),  'product_id' => 6, 'qty' => 6,  'price' => 159000, 'ket' => 'Penjualan'],
+            ['tipe' => 'in', 'invoice' => 'INV-202501-009', 'date' => now()->subDays(2),  'product_id' => 7, 'qty' => 12, 'price' => 60000, 'ket' => 'Restock'],
+            ['tipe' => 'out', 'invoice' => 'INV-202501-010', 'date' => now()->subDay(),    'product_id' => 10, 'qty' => 5,  'price' => 149000, 'ket' => 'Penjualan'],
         ]);
     }
 }
