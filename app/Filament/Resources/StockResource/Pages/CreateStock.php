@@ -95,26 +95,6 @@ class CreateStock extends CreateRecord
                     'ket'        => $ket,
                 ];
 
-                if ($tipe === 'in') {
-                    // penambahan: update modal produk dan tambah qty
-                    $product->increment('qty', $qty);
-                    $stockData['price'] = $product->capital_price;
-                    $product->save();
-                } else {
-                    // penjualan: pastikan stok cukup lalu kurangi
-                    if ($product->qty < $qty) {
-                        DB::rollBack();
-                        Notification::make()
-                            ->title("Stok produk \"{$product->name}\" tidak cukup saat proses. (tersisa: {$product->qty})")
-                            ->danger()
-                            ->send();
-
-                        return new Stock();
-                    }
-                    $product->decrement('qty', $qty);
-                    $stockData['price'] = $price;
-                }
-
                 $created = Stock::create($stockData);
             }
 

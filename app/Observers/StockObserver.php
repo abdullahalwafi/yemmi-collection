@@ -16,7 +16,7 @@ class StockObserver
             $product->increment('qty', $qty);
         } else {
             // keluar: kurangi, tapi pastikan tidak negatif
-            if ($product->qty < $qty) {
+            if ($product->qty < $qty) { 
                 throw new Exception("Stok produk [{$product->name}] tidak cukup. (tersisa: {$product->qty}, diminta keluar: {$qty})");
             }
             $product->decrement('qty', $qty);
