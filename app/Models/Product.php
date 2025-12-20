@@ -18,8 +18,8 @@ class Product extends Model
         return $this->belongsTo(Supplier::class);
     }
 
-    public function stock()
+    public function stockItems()
     {
-        return $this->hasMany(Stock::class);
+        return $this->hasMany(StockItem::class);
     }
 }

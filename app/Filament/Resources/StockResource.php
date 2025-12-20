@@ -31,97 +31,163 @@ class StockResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Radio::make('tipe')
-                ->options([
-                    'in' => 'Penambahan',
-                    'out' => 'Penjualan',
-                ])
-                ->required()
-                ->reactive(),
-
-            DatePicker::make('date')->label('Tanggal')->required(),
-
-            Repeater::make('items')
-                ->label('Items')
+            Forms\Components\Section::make('Informasi Transaksi')
                 ->schema([
-                    Select::make('product_id')
-                        ->label('Produk')
-                        ->options(fn() => Product::orderBy('name')->pluck('name', 'id')->toArray())
-                        ->searchable()
-                        ->reactive()
-                        ->afterStateUpdated(function ($state, callable $set) {
-                            $product = \App\Models\Product::find($state);
-                            $set('price', $product ? (string) $product->price : '0');
-                            $set('capital_price', $product ? (string) $product->capital_price : '0');
-                        })
-                        ->required(),
-
-                    TextInput::make('qty')
-                        ->label('Qty')
-                        ->numeric()
+                    Radio::make('tipe')
+                        ->label('Jenis Transaksi')
+                        ->options([
+                            'in'  => 'Penambahan Stok',
+                            'out' => 'Penjualan',
+                        ])
                         ->required()
-                        ->minValue(1)
-                        ->reactive(),
+                        ->inline(),
 
-                    TextInput::make('capital_price')
-                        ->label('Harga modal')
-                        ->numeric()
-                        ->readOnly()
-                        ->dehydrated(true),
-                    TextInput::make('price')
-                        ->label('Harga per unit')
-                        ->numeric()
-                        ->readOnly()
-                        ->dehydrated(true),
+                    DatePicker::make('date')
+                        ->label('Tanggal')
+                        ->required(),
                 ])
-                ->columns(2)
-                ->createItemButtonLabel('Tambah Produk')
-                ->minItems(1)
-                ->dehydrated(true),
+                ->columns(2),
 
-            Textarea::make('ket')->label('Keterangan (opsional)')->nullable()->cols(2),
+            Forms\Components\Section::make('Detail Produk')
+                ->schema([
+                    Repeater::make('items')
+                        ->relationship('items')
+                        ->label('Daftar Produk')
+                        ->schema([
+                            Select::make('product_id')
+                                ->label('Produk')
+                                ->relationship('product', 'name')
+                                ->searchable()
+                                ->required(),
+
+                            TextInput::make('qty')
+                                ->label('Qty')
+                                ->numeric()
+                                ->minValue(1)
+                                ->required(),
+
+                            TextInput::make('price')
+                                ->label('Harga')
+                                ->numeric()
+                                ->required(),
+                        ])
+                        ->columns(3)
+                        ->minItems(1)
+                        ->createItemButtonLabel('Tambah Produk')
+                        ->deletable()
+                        ->reorderable(false),
+                ]),
+
+            Forms\Components\Section::make('Keterangan')
+                ->schema([
+                    Textarea::make('ket')
+                        ->label('Catatan')
+                        ->rows(3)
+                        ->nullable(),
+                ]),
         ]);
     }
+
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')->label('ID')->sortable(),
+                Tables\Columns\TextColumn::make('invoice')
+                    ->label('Invoice')
+                    ->searchable()
+                    ->sortable(),
+
                 Tables\Columns\BadgeColumn::make('tipe')
                     ->label('Tipe')
                     ->colors([
                         'success' => 'in',
                         'danger'  => 'out',
                     ])
-                    ->formatStateUsing(fn($state) => $state === 'in' ? 'Penambahan' : 'Penjualan')
+                    ->formatStateUsing(
+                        fn($state) =>
+                        $state === 'in' ? 'Penambahan' : 'Penjualan'
+                    )
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('date')->date()->sortable(),
-                Tables\Columns\TextColumn::make('invoice')->label('Invoice')->sortable(),
-                Tables\Columns\TextColumn::make('product.name')->label('Produk')->searchable(),
-                Tables\Columns\TextColumn::make('qty')->label('Qty')->sortable(),
-                Tables\Columns\TextColumn::make('price')->label('Harga (jual)')->money('idr'),
-                Tables\Columns\TextColumn::make('product.capital_price')->label('Capital (produk)')->money('idr'),
-                Tables\Columns\TextColumn::make('ket')->label('Keterangan')->limit(40),
+                Tables\Columns\TextColumn::make('date')
+                    ->label('Tanggal')
+                    ->date()
+                    ->sortable(),
+
+                // ===== PRODUK (MULTI ITEM) =====
+                Tables\Columns\TextColumn::make('items')
+                    ->label('Produk')
+                    ->formatStateUsing(function ($record) {
+                        return $record->items
+                            ->map(
+                                fn($item) =>
+                                "{$item->product->name} ({$item->qty})"
+                            )
+                            ->implode(', ');
+                    })
+                    ->wrap()
+                    ->limit(60)
+                    ->tooltip(
+                        fn($record) =>
+                        $record->items
+                            ->map(
+                                fn($item) =>
+                                "{$item->product->name} ({$item->qty})"
+                            )
+                            ->implode(', ')
+                    ),
+
+                // ===== TOTAL QTY =====
+                Tables\Columns\TextColumn::make('total_qty')
+                    ->label('Total Qty')
+                    ->state(
+                        fn($record) =>
+                        $record->items->sum('qty')
+                    ),
+
+                // ===== TOTAL NILAI =====
+                Tables\Columns\TextColumn::make('total_amount')
+                    ->label('Total Nilai')
+                    ->state(
+                        fn($record) =>
+                        $record->items->sum(
+                            fn($item) =>
+                            $item->qty * $item->price
+                        )
+                    )
+                    ->money('idr'),
+
+                Tables\Columns\TextColumn::make('ket')
+                    ->label('Keterangan')
+                    ->limit(30)
+                    ->toggleable(),
             ])
 
-
-            // FILTER BIASA (opsional, bisa tetap dipakai)
             ->filters([
-                Tables\Filters\SelectFilter::make('product_id')
-                    ->label('Produk')
-                    ->options(fn() => Product::orderBy('name')->pluck('name', 'id')->toArray()),
-
                 Tables\Filters\SelectFilter::make('tipe')
                     ->label('Jenis Transaksi')
                     ->options([
-                        ''    => 'Semua',
                         'in'  => 'Penambahan',
                         'out' => 'Penjualan',
+                    ]),
+
+                Tables\Filters\Filter::make('date')
+                    ->form([
+                        Forms\Components\DatePicker::make('from')->label('Dari'),
+                        Forms\Components\DatePicker::make('until')->label('Sampai'),
                     ])
-                    ->default('')
-                    ->native(false), // agar tampil sebagai segmented / dropdown yang rapi
+                    ->query(function ($query, array $data) {
+                        return $query
+                            ->when(
+                                $data['from'] ?? null,
+                                fn($q) => $q->whereDate('date', '>=', $data['from'])
+                            )
+                            ->when(
+                                $data['until'] ?? null,
+                                fn($q) => $q->whereDate('date', '<=', $data['until'])
+                            );
+                    }),
             ])
 
             ->actions([
@@ -131,6 +197,7 @@ class StockResource extends Resource
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ])
+
             ->defaultSort('date', 'desc');
     }
 

@@ -10,8 +10,8 @@ class Stock extends Model
         'id'
     ];
 
-    public function product()
+    public function items()
     {
-        return $this->belongsTo(Product::class);
+        return $this->hasMany(StockItem::class);
     }
 }

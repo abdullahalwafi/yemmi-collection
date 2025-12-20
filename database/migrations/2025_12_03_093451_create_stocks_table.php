@@ -16,12 +16,6 @@ return new class extends Migration
             $table->enum('tipe', ['in', 'out']);
             $table->string("invoice");
             $table->date('date');
-
-            $table->unsignedBigInteger('product_id');
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
-
-            $table->integer('qty')->default(0);
-            $table->decimal('price', 15, 2)->default(0);
             $table->text('ket')->nullable();
 
             $table->timestamps();
