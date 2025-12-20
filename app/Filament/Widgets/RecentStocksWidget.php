@@ -9,14 +9,27 @@ class RecentStocksWidget extends Widget
 {
     protected static string $view = 'filament.widgets.recent-stocks-widget';
 
-    public $items = [];
+    protected static ?int $sort = 1; // urutan di dashboard
+
+    public array $items = [];
 
     public function mount(): void
     {
-        $this->items = Stock::with('product')
-            ->orderByDesc('created_at')
+        $this->items = Stock::with(['items.product'])
+            ->orderByDesc('date')
             ->limit(6)
-            ->get();
-        
+            ->get()
+            ->map(function ($stock) {
+                return [
+                    'invoice' => $stock->invoice,
+                    'tipe'    => $stock->tipe,
+                    'date'    => $stock->date,
+                    'items'   => $stock->items->map(fn($item) => [
+                        'product' => $item->product->name,
+                        'qty'     => $item->qty,
+                    ]),
+                ];
+            })
+            ->toArray();
     }
 }

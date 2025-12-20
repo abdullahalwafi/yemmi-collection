@@ -10,46 +10,55 @@ use Illuminate\Support\Facades\DB;
 class StatsWidget extends Widget
 {
     protected static string $view = 'filament.widgets.stats-widget';
+
     public int $totalProducts = 0;
     public int $totalStockIn = 0;
     public int $totalStockOut = 0;
-    public float $totalStockValue = 0.0;
 
+    public float $totalStockValue = 0;
     public float $totalModalThisMonth = 0;
     public float $totalRevenueThisMonth = 0;
 
     public function mount(): void
     {
+        // ===== TOTAL PRODUK =====
         $this->totalProducts = Product::count();
 
-        $this->totalStockIn = Stock::where('tipe', 'in')->sum('qty');
-        $this->totalStockOut = Stock::where('tipe', 'out')->sum('qty');
+        // ===== TOTAL STOCK IN & OUT (QTY) =====
+        $this->totalStockIn = DB::table('stock_items')
+            ->join('stocks', 'stocks.id', '=', 'stock_items.stock_id')
+            ->where('stocks.tipe', 'in')
+            ->sum('stock_items.qty');
 
-        // nilai stok = sum(products.qty * capital_price)
-        $this->totalStockValue = Product::sum(DB::raw('qty * COALESCE(capital_price, 0)'));
+        $this->totalStockOut = DB::table('stock_items')
+            ->join('stocks', 'stocks.id', '=', 'stock_items.stock_id')
+            ->where('stocks.tipe', 'out')
+            ->sum('stock_items.qty');
 
-        // periode bulan ini
-        $startOfMonth = now()->startOfMonth()->toDateString();
-        $endOfMonth = now()->endOfMonth()->toDateString();
+        // ===== TOTAL NILAI STOK (CURRENT INVENTORY VALUE) =====
+        $this->totalStockValue = Product::select(
+            DB::raw('SUM(qty * COALESCE(capital_price, 0)) as total')
+        )->value('total') ?? 0;
 
-        // total modal this month = sum(qty * product.capital_price) for 'in' stocks month
-        $modalRows = Stock::where('tipe', 'in')
-            ->whereBetween('date', [$startOfMonth, $endOfMonth])
-            ->with('product')
-            ->get();
+        // ===== RANGE BULAN INI =====
+        $startOfMonth = now()->startOfMonth();
+        $endOfMonth   = now()->endOfMonth();
 
-        $this->totalModalThisMonth = $modalRows->reduce(function ($carry, $row) {
-            $capital = $row->product?->capital_price ?? 0;
-            return $carry + ($row->qty * $capital);
-        }, 0);
+        // ===== TOTAL MODAL BULAN INI (STOCK IN) =====
+        $this->totalModalThisMonth = DB::table('stock_items')
+            ->join('stocks', 'stocks.id', '=', 'stock_items.stock_id')
+            ->join('products', 'products.id', '=', 'stock_items.product_id')
+            ->where('stocks.tipe', 'in')
+            ->whereBetween('stocks.date', [$startOfMonth, $endOfMonth])
+            ->select(DB::raw('SUM(stock_items.qty * products.capital_price) as total'))
+            ->value('total') ?? 0;
 
-        // total revenue this month = sum(qty * price) for 'out' stocks month
-        $revenueRows = Stock::where('tipe', 'out')
-            ->whereBetween('date', [$startOfMonth, $endOfMonth])
-            ->get();
-
-        $this->totalRevenueThisMonth = $revenueRows->reduce(function ($carry, $row) {
-            return $carry + ($row->qty * ($row->price ?? 0));
-        }, 0);
+        // ===== TOTAL PENDAPATAN BULAN INI (STOCK OUT) =====
+        $this->totalRevenueThisMonth = DB::table('stock_items')
+            ->join('stocks', 'stocks.id', '=', 'stock_items.stock_id')
+            ->where('stocks.tipe', 'out')
+            ->whereBetween('stocks.date', [$startOfMonth, $endOfMonth])
+            ->select(DB::raw('SUM(stock_items.qty * stock_items.price) as total'))
+            ->value('total') ?? 0;
     }
 }

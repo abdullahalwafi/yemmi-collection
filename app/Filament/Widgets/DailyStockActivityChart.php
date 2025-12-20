@@ -8,54 +8,59 @@ use Illuminate\Support\Facades\DB;
 
 class DailyStockActivityChart extends ChartWidget
 {
-    protected static ?string $heading = 'Penjualan dan Pemasukan bulan ini';
-    
+    protected static ?string $heading = 'Pemasukan & Penjualan 30 Hari Terakhir';
+
     protected function getData(): array
     {
-        // Ambil data 30 hari terakhir
-        $start = now()->subDays(30)->format('Y-m-d');
+        $start = now()->subDays(30)->startOfDay();
 
-        $in = Stock::select(DB::raw('DATE(date) as date'), DB::raw('SUM(price) as total'))
-            ->where('tipe', 'in')
-            ->where('date', '>=', $start)
+        // ===== STOCK MASUK (IN) =====
+        $stockIn = Stock::query()
+            ->join('stock_items', 'stocks.id', '=', 'stock_items.stock_id')
+            ->where('stocks.tipe', 'in')
+            ->whereDate('stocks.date', '>=', $start)
+            ->selectRaw('DATE(stocks.date) as date, SUM(stock_items.qty * stock_items.price) as total')
             ->groupBy('date')
             ->orderBy('date')
-            ->get()
-            ->keyBy('date');
+            ->pluck('total', 'date');
 
-        $out = Stock::select(DB::raw('DATE(date) as date'), DB::raw('SUM(price) as total'))
-            ->where('tipe', 'out')
-            ->where('date', '>=', $start)
+        // ===== STOCK KELUAR (OUT) =====
+        $stockOut = Stock::query()
+            ->join('stock_items', 'stocks.id', '=', 'stock_items.stock_id')
+            ->where('stocks.tipe', 'out')
+            ->whereDate('stocks.date', '>=', $start)
+            ->selectRaw('DATE(stocks.date) as date, SUM(stock_items.qty * stock_items.price) as total')
             ->groupBy('date')
             ->orderBy('date')
-            ->get()
-            ->keyBy('date');
+            ->pluck('total', 'date');
 
-        // Generate tanggal lengkap 30 hari
+        // ===== RANGE TANGGAL =====
         $dates = [];
-        $stockIn = [];
-        $stockOut = [];
+        $inData = [];
+        $outData = [];
 
         for ($i = 30; $i >= 0; $i--) {
             $day = now()->subDays($i)->format('Y-m-d');
             $dates[] = $day;
-            $stockIn[] = $in[$day]->total ?? 0;
-            $stockOut[] = $out[$day]->total ?? 0;
+            $inData[] = (float) ($stockIn[$day] ?? 0);
+            $outData[] = (float) ($stockOut[$day] ?? 0);
         }
 
         return [
             'datasets' => [
                 [
-                    'label' => 'Pengeluaran',
-                    'data' => $stockIn,
-                    'borderColor' => '#10B981', // emerald-500
+                    'label' => 'Pemasukan Stok (IN)',
+                    'data' => $inData,
+                    'borderColor' => '#10B981', // emerald
                     'backgroundColor' => 'rgba(16, 185, 129, 0.3)',
+                    'tension' => 0.3,
                 ],
                 [
-                    'label' => 'Pemasukan',
-                    'data' => $stockOut,
-                    'borderColor' => '#EF4444', // red-500
+                    'label' => 'Penjualan (OUT)',
+                    'data' => $outData,
+                    'borderColor' => '#EF4444', // red
                     'backgroundColor' => 'rgba(239, 68, 68, 0.3)',
+                    'tension' => 0.3,
                 ],
             ],
             'labels' => $dates,

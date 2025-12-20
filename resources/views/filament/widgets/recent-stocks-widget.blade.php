@@ -1,29 +1,43 @@
-<div class="bg-white dark:bg-gray-800 shadow rounded-lg p-4 border border-gray-100 dark:border-gray-700">
-    <div class="flex items-center justify-between mb-3">
-        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200">Transaksi Terbaru</h3>
-        <a href="{{ url('/admin/stocks') }}" class="text-xs text-primary-600 dark:text-primary-400">Lihat semua</a>
-    </div>
+<x-filament::widget>
+    <x-filament::card>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-bold">Transaksi Terbaru</h2>
+        </div>
 
-    <ul class="divide-y divide-gray-100 dark:divide-gray-700">
-        @foreach ($items as $it)
-            <li class="py-2 flex items-center justify-between">
-                <div>
-                    <div class="text-sm font-medium text-gray-800 dark:text-gray-100">
-                        {{ $it->product?->name ?? '-' }}
-                        <span class="ml-2 px-2 py-0.5 text-xs rounded bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
-                            {{ $it->tipe === 'in' ? 'Masuk' : 'Keluar' }}
+        <div class="space-y-3">
+            @forelse ($items as $stock)
+                <div
+                    class="p-3 rounded-lg border
+                    bg-white dark:bg-gray-900
+                    border-gray-200 dark:border-gray-700">
+
+                    <div class="flex justify-between items-center mb-1">
+                        <div class="font-semibold">
+                            {{ $stock['invoice'] }}
+                        </div>
+
+                        <span
+                            class="text-xs px-2 py-1 rounded
+                            {{ $stock['tipe'] === 'in'
+                                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300'
+                                : 'bg-rose-100 text-rose-700 dark:bg-rose-900 dark:text-rose-300' }}">
+                            {{ $stock['tipe'] === 'in' ? 'Penambahan' : 'Penjualan' }}
                         </span>
                     </div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">
-                        {{ $it->invoice }} — {{ $it->date }}
+
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                        {{ \Carbon\Carbon::parse($stock['date'])->format('d M Y') }}
+                    </div>
+
+                    <div class="text-sm text-gray-700 dark:text-gray-300">
+                        {{ collect($stock['items'])->map(fn($i) => $i['product'] . ' (' . $i['qty'] . ')')->implode(', ') }}
                     </div>
                 </div>
-
-                <div class="text-right">
-                    <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ $it->qty }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">Rp {{ number_format($it->price) }}</div>
+            @empty
+                <div class="text-sm text-gray-500">
+                    Belum ada transaksi.
                 </div>
-            </li>
-        @endforeach
-    </ul>
-</div>
+            @endforelse
+        </div>
+    </x-filament::card>
+</x-filament::widget>
