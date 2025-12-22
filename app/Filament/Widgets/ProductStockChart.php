@@ -8,11 +8,20 @@ use Filament\Widgets\ChartWidget;
 class ProductStockChart extends ChartWidget
 {
     protected static ?string $heading = 'Grafik Stok Produk';
-
+    protected static ?string $maxHeight = '275px';
+    protected function getOptions(): array
+    {
+        return [
+            'plugins' => [
+                'legend' => [
+                    'position' => 'right',
+                ],
+            ],
+        ];
+    }
     protected function getData(): array
     {
         $products = Product::orderBy('name')->get();
-
         return [
             'datasets' => [
                 [

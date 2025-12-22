@@ -11,6 +11,7 @@ use App\Models\StockItem;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class DatabaseSeeder extends Seeder
 {
@@ -26,18 +27,27 @@ class DatabaseSeeder extends Seeder
                     'name' => 'Admin',
                     'email' => 'admin@admin.com',
                     'password' => Hash::make('admin@admin.com'),
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
                 ],
                 [
                     'name' => 'Owner',
                     'email' => 'owner@owner.com',
                     'password' => Hash::make('owner@owner.com'),
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
                 ],
             ]);
 
             /* =====================
              * SUPPLIERS (10)
              * ===================== */
-            Supplier::insert([
+            Supplier::insert(array_map(function ($supplier) {
+                return array_merge($supplier, [
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]);
+            }, [
                 ['name' => 'PT Mothercare Indonesia', 'address' => 'Jakarta Selatan', 'telepon' => '02178889900', 'email' => 'info@mothercare.co.id'],
                 ['name' => 'PT Kiko Kids Indonesia', 'address' => 'Jakarta Barat', 'telepon' => '0215552233', 'email' => 'sales@kikokids.id'],
                 ['name' => 'CV Velvet Junior', 'address' => 'Bandung', 'telepon' => '0227334455', 'email' => 'velvetjunior@gmail.com'],
@@ -48,12 +58,17 @@ class DatabaseSeeder extends Seeder
                 ['name' => 'CV Hey Baby Wear', 'address' => 'Bandung', 'telepon' => '0227001122', 'email' => 'heybaby@gmail.com'],
                 ['name' => 'PT Cotton On Kids Indonesia', 'address' => 'Jakarta Selatan', 'telepon' => '02129033000', 'email' => 'kids@cottonon.com'],
                 ['name' => 'UD Grosir Tanah Abang Kids', 'address' => 'Jakarta Pusat', 'telepon' => '081234556677', 'email' => 'tanahabangkids@gmail.com'],
-            ]);
+            ]));
 
             /* =====================
              * CATEGORIES (10)
              * ===================== */
-            Category::insert([
+            Category::insert(array_map(function ($category) {
+                return array_merge($category, [
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]);
+            }, [
                 ['name' => 'Baju Bayi'],
                 ['name' => 'Baju Anak Laki-laki'],
                 ['name' => 'Baju Anak Perempuan'],
@@ -64,23 +79,26 @@ class DatabaseSeeder extends Seeder
                 ['name' => 'Piyama Anak'],
                 ['name' => 'Aksesoris Anak'],
                 ['name' => 'Sepatu Anak'],
-            ]);
+            ]));
 
             /* =====================
              * PRODUCTS (10)
              * ===================== */
-            Product::insert([
-                ['name' => 'Libby Bodysuit Bayi', 'category_id' => 1, 'deskripsi' => 'Bodysuit bayi', 'qty' => 0, 'price' => 49000, 'capital_price' => 35000, 'supplier_id' => 4],
-                ['name' => 'Kiko Kids Kaos Anak', 'category_id' => 2, 'deskripsi' => 'Kaos anak', 'qty' => 0, 'price' => 69000, 'capital_price' => 45000, 'supplier_id' => 2],
-                ['name' => 'Velvet Dress Anak', 'category_id' => 6, 'deskripsi' => 'Dress anak', 'qty' => 0, 'price' => 129000, 'capital_price' => 90000, 'supplier_id' => 3],
-                ['name' => 'Mothercare Jaket Anak', 'category_id' => 5, 'deskripsi' => 'Jaket anak', 'qty' => 0, 'price' => 199000, 'capital_price' => 150000, 'supplier_id' => 1],
-                ['name' => 'Poney Setelan Anak', 'category_id' => 7, 'deskripsi' => 'Setelan anak', 'qty' => 0, 'price' => 179000, 'capital_price' => 130000, 'supplier_id' => 5],
-                ['name' => 'OshKosh Celana Anak', 'category_id' => 4, 'deskripsi' => 'Celana anak', 'qty' => 0, 'price' => 159000, 'capital_price' => 120000, 'supplier_id' => 7],
-                ['name' => 'Hey Baby Piyama', 'category_id' => 8, 'deskripsi' => 'Piyama anak', 'qty' => 0, 'price' => 89000, 'capital_price' => 60000, 'supplier_id' => 8],
-                ['name' => 'Palmerhaus Dress', 'category_id' => 6, 'deskripsi' => 'Dress handmade', 'qty' => 0, 'price' => 219000, 'capital_price' => 160000, 'supplier_id' => 6],
-                ['name' => 'Cotton On Kids Topi', 'category_id' => 9, 'deskripsi' => 'Topi anak', 'qty' => 0, 'price' => 59000, 'capital_price' => 40000, 'supplier_id' => 9],
-                ['name' => 'Sepatu Anak Sekolah', 'category_id' => 10, 'deskripsi' => 'Sepatu anak', 'qty' => 0, 'price' => 149000, 'capital_price' => 110000, 'supplier_id' => 10],
-            ]);
+            Product::insert(array_map(function ($product) {
+                return array_merge($product, [
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]);
+            }, [
+                ['name' => 'Libby Bodysuit Bayi', 'category_id' => 1, 'deskripsi' => 'Bodysuit bayi', 'qty' => rand(0, 100), 'price' => 49000, 'capital_price' => 35000, 'supplier_id' => 4],
+                ['name' => 'Kiko Kids Kaos Anak', 'category_id' => 2, 'deskripsi' => 'Kaos anak', 'qty' => rand(0, 100), 'price' => 69000, 'capital_price' => 45000, 'supplier_id' => 2],
+                ['name' => 'Velvet Dress Anak', 'category_id' => 6, 'deskripsi' => 'Dress anak', 'qty' => rand(0, 100), 'price' => 129000, 'capital_price' => 90000, 'supplier_id' => 3],
+                ['name' => 'Mothercare Jaket Anak', 'category_id' => 5, 'deskripsi' => 'Jaket anak', 'qty' => rand(0, 100), 'price' => 199000, 'capital_price' => 150000, 'supplier_id' => 1],
+                ['name' => 'Poney Setelan Anak', 'category_id' => 7, 'deskripsi' => 'Setelan anak', 'qty' => rand(0, 100), 'price' => 179000, 'capital_price' => 130000, 'supplier_id' => 5],
+                ['name' => 'OshKosh Celana Anak', 'category_id' => 4, 'deskripsi' => 'Celana anak', 'qty' => rand(0, 100), 'price' => 159000, 'capital_price' => 120000, 'supplier_id' => 7],
+                ['name' => 'Hey Baby Piyama', 'category_id' => 8, 'deskripsi' => 'Piyama anak', 'qty' => rand(0, 100), 'price' => 89000, 'capital_price' => 60000, 'supplier_id' => 8],
+                ['name' => 'Palmerhaus Dress', 'category_id' => 6, 'deskripsi' => 'Dress handmade', 'qty' => rand(0, 100), 'price' => 219000, 'capital_price' => 160000, 'supplier_id' => 6],
+            ]));
 
             /* =====================
              * STOCKS + STOCK_ITEMS

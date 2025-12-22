@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 class DailyStockActivityChart extends ChartWidget
 {
     protected static ?string $heading = 'Pemasukan & Penjualan 30 Hari Terakhir';
+    protected static ?string $maxHeight = '275px';
 
     protected function getData(): array
     {

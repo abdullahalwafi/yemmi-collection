@@ -37,7 +37,9 @@ class SupplierResource extends Resource
     public static function table(Table $table): Table
     {
         return $table->columns([
-            Tables\Columns\TextColumn::make('id')->label('ID')->sortable(),
+            Tables\Columns\TextColumn::make('row_index')
+                ->label('No.')
+                ->rowIndex(),
             Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
             Tables\Columns\TextColumn::make('telepon')->label('Telepon'),
             Tables\Columns\TextColumn::make('email')->label('Email'),
