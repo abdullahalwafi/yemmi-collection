@@ -17,10 +17,10 @@
             <tr>
                 <td>{{ $row->date }}</td>
                 <td>{{ $row->invoice }}</td>
-                <td>{{ $row->product->name }}</td>
+                <td>{{ $row->product_name }}</td>
                 <td>{{ $row->qty }}</td>
-                <td>{{ number_format($row->price) }}</td>
-                <td>{{ number_format($row->qty * $row->price) }}</td>
+                <td>{{ number_format($row->capital_price) }}</td>
+                <td>{{ number_format($row->qty * $row->capital_price) }}</td>
             </tr>
         @endforeach
     </tbody>
