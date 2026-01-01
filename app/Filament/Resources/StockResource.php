@@ -9,6 +9,7 @@ use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -17,7 +18,8 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Tabs\Tab;
-
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 
 class StockResource extends Resource
 {
@@ -27,11 +29,14 @@ class StockResource extends Resource
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationGroup = null;
 
-
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Section::make('Informasi Transaksi')
+
+            /* =====================================================
+            * INFORMASI TRANSAKSI
+            * ===================================================== */
+            Section::make('Informasi Transaksi')
                 ->schema([
                     Radio::make('tipe')
                         ->label('Jenis Transaksi')
@@ -40,7 +45,7 @@ class StockResource extends Resource
                             'out' => 'Penjualan',
                         ])
                         ->required()
-                        ->inline(),
+                        ->reactive(),
 
                     DatePicker::make('date')
                         ->label('Tanggal')
@@ -48,37 +53,148 @@ class StockResource extends Resource
                 ])
                 ->columns(2),
 
-            Forms\Components\Section::make('Detail Produk')
+            /* =====================================================
+            * DETAIL PRODUK
+            * ===================================================== */
+            Section::make('Detail Produk')
                 ->schema([
                     Repeater::make('items')
-                        ->relationship('items')
                         ->label('Daftar Produk')
+                        ->relationship('items')
                         ->schema([
+
+                            /* ========================
+                            * PRODUK
+                            * ======================== */
                             Select::make('product_id')
                                 ->label('Produk')
-                                ->relationship('product', 'name')
+                                ->options(
+                                    fn() =>
+                                    Product::orderBy('name')
+                                        ->get()
+                                        ->mapWithKeys(fn($p) => [
+                                            $p->id => "{$p->name} (Stok: {$p->qty})"
+                                        ])
+                                        ->toArray()
+                                )
                                 ->searchable()
-                                ->required(),
+                                ->required()
+                                ->reactive()
+                                ->disableOptionsWhenSelectedInSiblingRepeaterItems()
 
+                                // 🔑 SAAT EDIT: isi ulang price, stock, total
+                                ->afterStateHydrated(function ($state, Set $set, Get $get) {
+                                    if (! $state) return;
+
+                                    $product = Product::find($state);
+                                    if (! $product) return;
+
+                                    $tipe = $get('../../tipe');
+
+                                    $price = $tipe === 'in'
+                                        ? $product->capital_price
+                                        : $product->price;
+
+                                    $set('price', $price);
+                                    $set('current_stock', $product->qty);
+
+                                    $qty = (int) ($get('qty') ?? 0);
+                                    $set('total', $qty * $price);
+                                })
+
+                                // 🔁 SAAT CREATE / GANTI PRODUK
+                                ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                                    if (! $state) return;
+
+                                    $product = Product::find($state);
+                                    if (! $product) return;
+
+                                    $tipe = $get('../../tipe');
+
+                                    $price = $tipe === 'in'
+                                        ? $product->capital_price
+                                        : $product->price;
+
+                                    $set('price', $price);
+                                    $set('current_stock', $product->qty);
+
+                                    $qty = (int) ($get('qty') ?? 0);
+                                    $set('total', $qty * $price);
+
+                                    // update grand total
+                                    $items = $get('../../items') ?? [];
+                                    $grand = collect($items)->sum(fn($i) => $i['total'] ?? 0);
+                                    $set('../../grand_total', $grand);
+                                }),
+
+                            /* ========================
+                            * QTY
+                            * ======================== */
                             TextInput::make('qty')
                                 ->label('Qty')
                                 ->numeric()
                                 ->minValue(1)
-                                ->required(),
+                                ->required()
+                                ->reactive()
+                                ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                                    $price = (float) ($get('price') ?? 0);
+                                    $total = $state * $price;
+                                    $set('total', $total);
 
+                                    // update grand total
+                                    $items = $get('../../items') ?? [];
+                                    $grand = collect($items)->sum(fn($i) => $i['total'] ?? 0);
+                                    $set('../../grand_total', $grand);
+                                }),
+
+                            /* ========================
+                 * HARGA / UNIT
+                 * ======================== */
                             TextInput::make('price')
-                                ->label('Harga')
+                                ->label('Harga / Unit')
                                 ->numeric()
-                                ->required(),
+                                ->readOnly()
+                                ->dehydrated(true),
+
+                            /* ========================
+                            * TOTAL PER ITEM
+                            * ======================== */
+                            TextInput::make('total')
+                                ->label('Total')
+                                ->numeric()
+                                ->readOnly()
+                                ->dehydrated(false),
+
+                            /* ========================
+                            * STOK SAAT INI
+                            * ======================== */
+                            TextInput::make('current_stock')
+                                ->label('Stok Saat Ini')
+                                ->numeric()
+                                ->readOnly()
+                                ->dehydrated(false),
                         ])
-                        ->columns(3)
+                        ->columns(5)
                         ->minItems(1)
                         ->createItemButtonLabel('Tambah Produk')
                         ->deletable()
-                        ->reorderable(false),
-                ]),
+                        ->dehydrated(true),
 
-            Forms\Components\Section::make('Keterangan')
+                    /* ========================
+                    * GRAND TOTAL
+                    * ======================== */
+                    TextInput::make('grand_total')
+                        ->label('Total Keseluruhan')
+                        ->numeric()
+                        ->readOnly()
+                        ->prefix('Rp')
+                        ->default(0)
+                        ->dehydrated(false),
+                ]),
+            /* =====================================================
+            * KETERANGAN
+            * ===================================================== */
+            Section::make('Keterangan')
                 ->schema([
                     Textarea::make('ket')
                         ->label('Catatan')
@@ -87,7 +203,6 @@ class StockResource extends Resource
                 ]),
         ]);
     }
-
 
     public static function table(Table $table): Table
     {

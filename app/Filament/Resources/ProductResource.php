@@ -32,7 +32,6 @@ class ProductResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-
             TextInput::make('name')->required()->maxLength(255),
             Select::make('category_id')
                 ->label('Kategori')
