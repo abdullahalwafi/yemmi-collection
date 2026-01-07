@@ -15,12 +15,12 @@
     <tbody>
         @foreach ($data as $row)
             <tr>
-                <td>{{ $row->date }}</td>
+                <td>{{ \Carbon\Carbon::parse($row->date)->format('d-m-Y') }}</td>
                 <td>{{ $row->invoice }}</td>
-                <td>{{ $row->product->name }}</td>
+                <td>{{ $row->product_name }}</td>
                 <td>{{ $row->qty }}</td>
-                <td>{{ number_format($row->product->capital_price) }}</td>
-                <td>{{ number_format($row->qty * $row->product->capital_price) }}</td>
+                <td>{{ number_format($row->capital_price, 0, ',', '.') }}</td>
+                <td>{{ number_format($row->total_modal, 0, ',', '.') }}</td>
             </tr>
         @endforeach
     </tbody>

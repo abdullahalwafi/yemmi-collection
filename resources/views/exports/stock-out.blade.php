@@ -7,20 +7,20 @@
             <th>Tanggal</th>
             <th>Invoice</th>
             <th>Produk</th>
-            <th>Qty</th>
-            <th>Harga Jual</th>
-            <th>Total Penjualan</th>
+            <th class="text-right">Qty</th>
+            <th class="text-right">Harga</th>
+            <th class="text-right">Total</th>
         </tr>
     </thead>
     <tbody>
         @foreach ($data as $row)
             <tr>
-                <td>{{ $row->date }}</td>
+                <td>{{ \Carbon\Carbon::parse($row->date)->format('d-m-Y') }}</td>
                 <td>{{ $row->invoice }}</td>
                 <td>{{ $row->product_name }}</td>
-                <td>{{ $row->qty }}</td>
-                <td>{{ number_format($row->capital_price) }}</td>
-                <td>{{ number_format($row->qty * $row->capital_price) }}</td>
+                <td class="text-right">{{ $row->qty }}</td>
+                <td class="text-right">Rp {{ number_format($row->capital_price) }}</td>
+                <td class="text-right">Rp {{ number_format($row->qty * $row->capital_price) }}</td>
             </tr>
         @endforeach
     </tbody>

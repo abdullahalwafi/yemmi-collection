@@ -82,7 +82,7 @@ class StockResource extends Resource
                                 ->reactive()
                                 ->disableOptionsWhenSelectedInSiblingRepeaterItems()
 
-                                // 🔑 SAAT EDIT: isi ulang price, stock, total
+                                // SAAT EDIT: isi ulang price, stock, total
                                 ->afterStateHydrated(function ($state, Set $set, Get $get) {
                                     if (! $state) return;
 
@@ -102,7 +102,7 @@ class StockResource extends Resource
                                     $set('total', $qty * $price);
                                 })
 
-                                // 🔁 SAAT CREATE / GANTI PRODUK
+                                // SAAT CREATE / GANTI PRODUK
                                 ->afterStateUpdated(function ($state, Set $set, Get $get) {
                                     if (! $state) return;
 
@@ -148,8 +148,8 @@ class StockResource extends Resource
                                 }),
 
                             /* ========================
-                 * HARGA / UNIT
-                 * ======================== */
+                            * HARGA / UNIT
+                            * ======================== */
                             TextInput::make('price')
                                 ->label('Harga / Unit')
                                 ->numeric()
@@ -177,8 +177,7 @@ class StockResource extends Resource
                         ->columns(5)
                         ->minItems(1)
                         ->createItemButtonLabel('Tambah Produk')
-                        ->deletable()
-                        ->dehydrated(true),
+                        ->deletable(),
 
                     /* ========================
                     * GRAND TOTAL

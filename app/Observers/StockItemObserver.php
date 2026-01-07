@@ -60,7 +60,7 @@ class StockItemObserver
             $newProduct = Product::lockForUpdate()->find($item->product_id);
 
             $tipe = $item->stock->tipe;
-
+            \Log::info($item->getDirty());
             if (! $oldProduct || ! $newProduct) {
                 throw new Exception("Produk tidak ditemukan saat update.");
             }

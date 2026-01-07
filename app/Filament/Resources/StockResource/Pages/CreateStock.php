@@ -18,37 +18,4 @@ class CreateStock extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
-
-    protected function handleRecordCreation(array $data): Model
-    {
-        return DB::transaction(function () use ($data) {
-
-            // 1️⃣ SIMPAN HEADER STOCK
-            $stock = Stock::create([
-                'tipe'    => $data['tipe'],
-                'invoice' => 'INV-' . now()->format('YmdHis'),
-                'date'    => $data['date'],
-                'ket'     => $data['ket'] ?? null,
-            ]);
-
-            // 2️⃣ SIMPAN DETAIL (STOCK_ITEMS)
-            foreach ($data['items'] as $item) {
-
-                $product = Product::lockForUpdate()->findOrFail($item['product_id']);
-
-                // harga otomatis
-                $price = $stock->tipe === 'in'
-                    ? $product->capital_price   // modal
-                    : $product->price;          // jual
-
-                $stock->items()->create([
-                    'product_id' => $product->id,
-                    'qty'        => (int) $item['qty'],
-                    'price'      => $price,
-                ]);
-            }
-
-            return $stock;
-        });
-    }
 }
